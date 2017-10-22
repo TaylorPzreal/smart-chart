@@ -1,2 +1,4 @@
-# ngxcharts
-Angular4 charts use with d3.js
+# smart-chart
+
+> Angular4 charts use with d3.js
+
