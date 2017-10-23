@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "target": "es5",
-    // "module": "es2015",
+    "module": "es2015",
     "sourceMap": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
@@ -15,7 +15,7 @@
     ]
   },
   "files": [
-    "./lib/empty-text.ts"
+    "./src"
   ]
   // "angularCompilerOptions": {
   //   "skipTemplateCodegen": true

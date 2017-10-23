@@ -1,0 +1,1 @@
+{"version":3,"file":"test.js","sources":["../src/test.ts"],"sourcesContent":["const a: string = 'test';\nexport function consoleFn() {\n  console.log(a);\n};"],"names":[],"mappings":";;;AAAA,IAAM,CAAC,GAAW,MAAM,CAAC;AACzB;IACE,OAAO,CAAC,GAAG,CAAC,CAAC,CAAC,CAAC;CAChB;;;;;;;;;;"}
