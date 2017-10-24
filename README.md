@@ -13,6 +13,6 @@ import { TreeChart, PieChart, LineChart, BarChart} from 'SmartChart'
 ```
 
 ```ts
-  const config = {};
-  const treeChart = new TreeChart(config);
+const config = {};
+const treeChart = new TreeChart(config);
 ```
