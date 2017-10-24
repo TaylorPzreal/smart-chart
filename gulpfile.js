@@ -11,7 +11,7 @@ const sass = require('node-sass');
 
 const rollupOptions = (function() {
   const inputOptions = {
-    input: './src/test.ts',
+    input: './src/index.ts',
     plugins: [
       rollupTypescript({
         typescript: require('typescript')
@@ -31,14 +31,14 @@ const rollupOptions = (function() {
   };
 
   const outputOptionsForUMD = {
-    file: './dist/lib.umd.js',
+    file: './dist/index.umd.js',
     format: 'umd',
     name: 'lib',
     sourcemap: true
   };
 
   const outputOptionsForES = {
-    file: './dist/lib.es.js',
+    file: './dist/index.es.js',
     format: 'es',
     // name: ''
     sourcemap: true

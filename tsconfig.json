@@ -10,13 +10,9 @@
     "declaration": true,
     "outDir": "./dist",
     "lib": ["es2017", "dom"],
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "typeRoots": ["node_modules/@types"]
   },
-  "files": [
-    "./src"
-  ]
+  "files": ["./src"]
   // "angularCompilerOptions": {
   //   "skipTemplateCodegen": true
   // }

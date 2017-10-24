@@ -2,10 +2,18 @@
   "name": "smart-chart",
   "version": "1.0.0-beta.0",
   "description": "Angular4 chart use d3.js",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "unpkg": "dist/src/index.ts",
+  "types": "dist/index.d.ts",
   "directories": {
     "lib": "lib"
   },
+  "files": [
+    "README.md",
+    "LICENSE",
+    "package.json",
+    "dist"
+  ],
   "scripts": {
     "clean": "gulp clean",
     "build": "npm run clean && gulp build"
