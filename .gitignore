@@ -5,6 +5,7 @@
 
 ./dist/
 package-lock.json
+dist/
 
 # User-specific files
 *.suo
