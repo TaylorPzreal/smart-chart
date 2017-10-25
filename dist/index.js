@@ -1,8 +1,5 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global.SmartChart = {})));
-}(this, (function (exports) { 'use strict';
+var SmartChart = (function (exports) {
+'use strict';
 
 var ascending = function(a, b) {
   return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
@@ -5319,7 +5316,7 @@ exports.LineChart = LineChart;
 exports.PieChart = PieChart;
 exports.TreeChart = TreeChart;
 
-Object.defineProperty(exports, '__esModule', { value: true });
+return exports;
 
-})));
-//# sourceMappingURL=index.umd.js.map
+}({}));
+//# sourceMappingURL=index.js.map

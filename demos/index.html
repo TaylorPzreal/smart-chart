@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>SmartChart</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--<link href="css/style.css" rel="stylesheet">-->
+
+  <style>
+    rect {
+      fill: steelblue;
+    }
+
+    text {
+      fill: white;
+      font: 10px sans-serif;
+      text-anchor: middle;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="bar-chart"></div>
+
+  <script src="../dist/index.js"></script>
+  <script>
+    var data = [{
+      name: '1992',
+      value: 2
+    }, {
+      name: '1993',
+      value: 3
+    }, {
+      name: '1995',
+      value: 6
+    }, {
+      name: '1996',
+      value: 8
+    }, {
+      name: '1997',
+      value: 12
+    }];
+    var chart = new SmartChart.BarChart('#bar-chart');
+    chart.render(data);
+  </script>
+</body>
+
+</html>

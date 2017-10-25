@@ -33,7 +33,7 @@ const rollupOptions = (function() {
   const outputOptionsForUMD = {
     file: './dist/index.umd.js',
     format: 'umd',
-    name: 'lib',
+    name: 'SmartChart',
     sourcemap: true
   };
 
@@ -44,10 +44,18 @@ const rollupOptions = (function() {
     sourcemap: true
   };
 
+  const outputOptionsForIIFE = {
+    file: './dist/index.js',
+    format: 'iife',
+    name: 'SmartChart',
+    sourcemap: true
+  };
+
   return {
     inputOptions,
     outputOptionsForUMD,
-    outputOptionsForES
+    outputOptionsForES,
+    outputOptionsForIIFE
   };
 })();
 
@@ -61,6 +69,11 @@ gulp.task('build-es', async function() {
   await bundle.write(rollupOptions.outputOptionsForES);
 });
 
+gulp.task('build-iife', async function() {
+  const bundle = await rollup.rollup(rollupOptions.inputOptions);
+  await bundle.write(rollupOptions.outputOptionsForIIFE);
+});
+
 gulp.task('clean', async function() {
   return await gulp
     .src('dist/*', { read: false })
@@ -68,6 +81,6 @@ gulp.task('clean', async function() {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('build', ['build-umd', 'build-es']);
+gulp.task('build', ['build-umd', 'build-es', 'build-iife']);
 
 gulp.task('default', ['build']);
