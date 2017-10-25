@@ -3,9 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-./dist/
+/dist/*
 package-lock.json
-dist/
 
 # User-specific files
 *.suo
