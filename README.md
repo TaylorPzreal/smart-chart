@@ -3,6 +3,7 @@
 > A chart library base d3.js.
 
  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)  [![GitHub version](https://badge.fury.io/gh/TaylorPzreal%2Fsmart-chart.svg)](https://badge.fury.io/gh/TaylorPzreal%2Fsmart-chart)
+[![npm version](https://badge.fury.io/js/smart-chart.svg)](https://badge.fury.io/js/smart-chart)
 
 ## Example
 
@@ -53,7 +54,7 @@ import {BarChart, MapChart} from 'smart-chart'
 ```
 
 ```js
-const chart = new SmartChart.BarChart('#bar-chart);
+const chart = new SmartChart.BarChart('#bar-chart');
 
 const mapChart = new MapChart('#map-chart', 'path/to/dist/localdb/word_countries.json');
 ```
