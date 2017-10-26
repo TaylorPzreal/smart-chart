@@ -1,9 +1,10 @@
 {
   "name": "smart-chart",
   "version": "1.0.0-beta.0",
-  "description": "Angular4 chart use d3.js",
+  "description": "A chart library base d3.js",
   "main": "dist/index.js",
-  "unpkg": "dist/src/index.ts",
+  "module": "dist/index.es.js",
+  "unpkg": "src/index.ts",
   "types": "dist/index.d.ts",
   "directories": {
     "lib": "lib"
@@ -12,7 +13,8 @@
     "README.md",
     "LICENSE",
     "package.json",
-    "dist"
+    "dist",
+    "src"
   ],
   "scripts": {
     "clean": "gulp clean",
@@ -24,7 +26,6 @@
     "url": "git+https://github.com/TaylorPzreal/smart-chart.git"
   },
   "keywords": [
-    "angular4",
     "d3.js",
     "chart"
   ],
