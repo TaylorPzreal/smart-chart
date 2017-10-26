@@ -16,7 +16,8 @@
   ],
   "scripts": {
     "clean": "gulp clean",
-    "build": "npm run clean && gulp build"
+    "build": "npm run clean && gulp build",
+    "start": "http-server ./ -p 3000"
   },
   "repository": {
     "type": "git",
@@ -43,6 +44,7 @@
     "@types/node": "^8.0.46",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
+    "gulp-copy": "^1.0.1",
     "node-sass": "^4.5.3",
     "rollup": "^0.50.0",
     "rollup-plugin-angular": "^0.5.3",

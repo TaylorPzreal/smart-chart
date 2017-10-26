@@ -64,6 +64,11 @@
     var chart = new SmartChart.BarChart('#bar-chart');
     chart.render(data);
   </script>
+
+  <div id="map-chart"></div>
+  <script>
+    new SmartChart.MapChart('#map-chart', '../dist/localdb/world_countries.json');
+  </script>
 </body>
 
 </html>

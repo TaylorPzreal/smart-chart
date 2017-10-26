@@ -1,4 +1,5 @@
 const gulp = require('gulp');
+const gulpCopy = require('gulp-copy');
 const rollup = require('rollup');
 
 const del = require('del');
@@ -81,6 +82,15 @@ gulp.task('clean', async function() {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('build', ['build-umd', 'build-es', 'build-iife']);
+gulp.task('copy', async () => {
+  const sourceFiles = ['./src/localdb/world_countries.json'];
+  const destination = 'dist/';
+
+  await gulp
+    .src(sourceFiles)
+    .pipe(gulpCopy(destination, {prefix: 1}));
+});
+
+gulp.task('build', ['build-umd', 'build-es', 'build-iife', 'copy']);
 
 gulp.task('default', ['build']);
