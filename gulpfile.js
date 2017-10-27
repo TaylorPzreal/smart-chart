@@ -83,7 +83,7 @@ gulp.task('clean', async function() {
 });
 
 gulp.task('copy', async () => {
-  const sourceFiles = ['./src/localdb/world_countries.json'];
+  const sourceFiles = ['./src/localdb/*'];
   const destination = 'dist/';
 
   await gulp

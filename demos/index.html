@@ -65,9 +65,14 @@
     chart.render(data);
   </script>
 
+<button onclick="renderMap()">render</button>
+
   <div id="map-chart"></div>
   <script>
-    new SmartChart.MapChart('#map-chart', '../dist/localdb/world_countries.json');
+   var mapChart = new SmartChart.MapChart('#map-chart', '../dist/localdb/world_countries.json');
+   function renderMap() {
+     mapChart.render('../dist/localdb/world_cup_geo.tsv');
+   }
   </script>
 </body>
 
