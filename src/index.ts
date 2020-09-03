@@ -1,13 +1,5 @@
-import { BarChart } from './bar-chart';
-import { LineChart } from './line-chart';
-import { PieChart } from './pie-chart';
-import { TreeChart } from './tree-chart';
-import { MapChart } from './map-chart';
-
-export {
-  BarChart,
-  LineChart,
-  PieChart,
-  TreeChart,
-  MapChart,
-};
+export * from './config/base-option';
+export * from './charts';
+export * from './chart';
+export * from './type';
+export * from './util/format';

@@ -1,34 +1,49 @@
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import typescript from 'rollup-plugin-typescript';
-const sass = require('node-sass');
+import typescript from 'rollup-plugin-typescript2';
+import {terser} from 'rollup-plugin-terser';
+import babel from 'rollup-plugin-babel';
 
-export default {
-  input: './src/test.ts',
-  output: [{
-    file: 'dist/test.umd.js',
-    format: 'umd',
-    name: 'SC',
-    sourcemap: true
-  }, {
-    name: 'SmartChart',
-    file: 'dist/test.js',
-    format: 'iife',
-    sourcemap: true,
-  }, {
-    file: 'dist/test.bundle.js',
-    format: 'cjs'
-  }],
-  plugins: [
-    typescript({
-      typescript: require('typescript')
-    }),
-    resolve({
-      module: true,
-      main: true
-    }),
-    commonjs({
-      include: 'node_modules/**'
-    })
-  ]
+const baseOpts = {
+  input: 'src/index.ts',
+  watch: {
+    clearScreen: false,
+  },
 };
+
+const configurePlugins = ({module}) => {
+  return [
+    typescript(),
+    babel({
+      presets: [['@babel/preset-env', {
+        targets: {
+          browsers: ['chrome 68'],
+        },
+      }]],
+      extensions: ['.ts'],
+    }),
+    terser({
+      module,
+      mangle: true,
+      compress: true,
+    }),
+  ]
+}
+
+export default [
+  {
+    ...baseOpts,
+    output: {
+      format: 'esm',
+      file: './dist/index.es.js',
+    },
+    plugins: configurePlugins({module: true}),
+  },
+  {
+    ...baseOpts,
+    output: {
+      format: 'umd',
+      file: './dist/index.umd.js',
+      name: 'SmartChart',
+    },
+    plugins: configurePlugins({module: false}),
+  },
+];

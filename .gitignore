@@ -3,9 +3,6 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-/dist/*
-package-lock.json
-
 # User-specific files
 *.suo
 *.user
@@ -26,6 +23,8 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+/dist/*
+tsconfig.tsbuildinfo
 
 # Visual Studio 2015 cache/options directory
 .vs/
