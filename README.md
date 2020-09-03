@@ -47,7 +47,14 @@ function changeChartType() {
 }
 ```
 
+### Download image
+
 ```ts
+chart.download('Saved file name').then((v: string) => {
+  console.log(v);
+}).catch((e: Error) => {
+  console.log(e);
+});
 ```
 
 ### Or use it in JS
