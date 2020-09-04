@@ -5,7 +5,7 @@
  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)  [![GitHub version](https://badge.fury.io/gh/TaylorPzreal%2Fsmart-chart.svg)](https://badge.fury.io/gh/TaylorPzreal%2Fsmart-chart)
 [![npm version](https://badge.fury.io/js/smart-chart.svg)](https://badge.fury.io/js/smart-chart)
 
-> Note that the smart-chart dependent ```echarts```, you should install it separately.
+> Note that the smart-chart dependent on ```echarts```, you should install it separately.
 
 ## Installition
 
@@ -73,3 +73,4 @@ const chart = new SmartChart.Chart(document.getElementById('chart'));
 ![Bar](./docs/bar.png)
 ![Horizontal Bar](./docs/horizontal-bar.png)
 ![Pie](./docs/pie.png)
+
