@@ -7,6 +7,13 @@
 
 > Note that the smart-chart dependent on ```echarts```, you should install it separately.
 
+Update records
+
+|Features|Version|Date|
+|---|---|---|
+|Line, Bar, Horizontal Bar, Pie, Download|2.0.0-alpha.1|2020/09/03|
+|DataZoom, Auto Resize|2.0.0-alpha.2|2020/09/08|
+
 ## Installition
 
 ```bash

@@ -8,6 +8,7 @@ class Chart {
 
   constructor(dom: HTMLDivElement) {
     this.dom = dom;
+    this.addResizeListener();
   }
 
   public render(configuration: XConfiguration) {
@@ -29,8 +30,25 @@ class Chart {
     }
   }
 
+  public download(name = 'download-chart'): Promise<string> {
+    if (this.chart) {
+      const base64Data = this.chart.getDataURL({type: 'png', backgroundColor: '#fff', pixelRatio: 1});
+      const a = document.createElement('a');
+      a.href = base64Data;
+      a.download = `${name}.png`;
+      a.click();
+      return Promise.resolve('ok');
+    } else {
+      return Promise.reject(new Error('No Image could download'));
+    }
+  }
+
+  public resize(option?: echarts.EChartsResizeOption) {
+    this.chart?.resize(option);
+  }
+
   private renderLine(configuration: XConfiguration) {
-    const line = new Line(this.dom);
+    const line = new Line(this.dom, configuration.optionConfiguration);
     this.chart = line.chart;
 
     const data = dataToLine(configuration);
@@ -38,7 +56,7 @@ class Chart {
   }
 
   private renderBar(configuration: XConfiguration) {
-    const bar = new Bar(this.dom);
+    const bar = new Bar(this.dom, configuration.optionConfiguration);
     this.chart = bar.chart;
     const seriesData = dataToBar(configuration);
     bar.render(seriesData);
@@ -58,17 +76,22 @@ class Chart {
     pie.render(data, name);
   }
 
-  public download(name = 'download-chart'): Promise<string> {
-    if (this.chart) {
-      const base64Data = this.chart.getDataURL({type: 'png', backgroundColor: '#fff', pixelRatio: 1});
-      const a = document.createElement('a');
-      a.href = base64Data;
-      a.download = `${name}.png`;
-      a.click();
-      return Promise.resolve('ok');
-    } else {
-      return Promise.reject(new Error('No Image could download'));
+  private resizeCallback = () => {
+    if(this.chart){
+      this.chart.resize();
     }
+  }
+
+  private addResizeListener() {
+    window.addEventListener('resize', this.resizeCallback);
+  }
+
+  private removeResizeListener() {
+    window.removeEventListener('resize', this.resizeCallback);
+  }
+
+  public destroy() {
+    this.removeResizeListener();
   }
 }
 

@@ -1,23 +1,24 @@
 import echarts, { EChartOption } from 'echarts';
 import { getBaseOption, barSeries, barHorizontalLabel, colors } from '../config/base-option';
+import { XOptionConfiguration } from '../type';
 
 export class Bar {
   public chart: echarts.ECharts;
   private options: EChartOption;
 
-  constructor(dom: HTMLDivElement) {
+  constructor(dom: HTMLDivElement, configuration?: XOptionConfiguration) {
     this.chart = echarts.init(dom);
-    this.options = this.baseOptions();
+    this.options = this.baseOptions(configuration);
   }
 
-  private baseOptions(): EChartOption {
+  private baseOptions(configuration?: XOptionConfiguration): EChartOption {
     const option: EChartOption = {
       tooltip: {
         trigger: 'item',
       },
     };
 
-    return getBaseOption(option);
+    return getBaseOption(option, configuration);
   }
 
   public render(seriesData: EChartOption.SeriesBar[], isHorizontal = false) {

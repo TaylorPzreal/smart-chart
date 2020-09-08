@@ -1,4 +1,5 @@
 import { EChartOption } from 'echarts';
+import { XOptionConfiguration } from '../type';
 const optionColor = {
   text: 'rgba(51,51,51,0.6)',
   axis: '#d7d9dc',
@@ -14,7 +15,7 @@ const colors = [
   '#e85858',
 ];
 
-function getBaseOption(assignedOption: EChartOption = {}) {
+function getBaseOption(assignedOption: EChartOption = {}, configuration?: XOptionConfiguration) {
   const option: EChartOption = {
     tooltip: {},
     grid: {
@@ -77,6 +78,29 @@ function getBaseOption(assignedOption: EChartOption = {}) {
     },
     series: [],
   };
+
+  if (configuration?.useDataZoom) {
+    option.dataZoom = [
+        {   type: 'slider',
+            show: true,
+            realtime: true,
+            start: 70,
+            end: 100,
+            xAxisIndex: [0],
+            backgroundColor: 'transparent',
+            textStyle: {
+              color: optionColor.text,
+              fontSize: 12,
+            },
+            handleStyle: {
+              color: colors[0],
+              borderColor: colors[0],
+            },
+        },
+    ];
+
+    (option.grid as echarts.EChartOption.Grid)!.bottom = '46px';
+  }
 
   return Object.assign({}, option, assignedOption);
 }

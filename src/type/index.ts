@@ -20,4 +20,9 @@ export interface XConfiguration {
   type: XChartType,
   title?: string;
   serials: XDataSerial[],
+  optionConfiguration?: XOptionConfiguration;
+}
+
+export interface XOptionConfiguration {
+  useDataZoom: boolean;
 }
