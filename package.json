@@ -2,8 +2,8 @@
   "name": "smart-chart",
   "version": "2.0.0-alpha.2",
   "description": "This chart library comprises other charts, like echarts, d3 etc",
-  "main": "dist/index.umd.js",
-  "module": "dist/index.es.js",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "LICENSE",
@@ -36,6 +36,7 @@
   "devDependencies": {
     "@babel/core": "7.11.5",
     "@babel/preset-env": "7.11.5",
+    "@rollup/plugin-json": "4.1.0",
     "@types/echarts": "4.6.5",
     "@typescript-eslint/eslint-plugin": "4.0.1",
     "@typescript-eslint/parser": "4.0.1",
