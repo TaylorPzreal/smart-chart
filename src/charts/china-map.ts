@@ -1,4 +1,6 @@
 import echarts, { ECharts, EChartOption } from "echarts";
+import { barSeries, getBaseOption, optionColor } from "../config/base-option";
+import { reflectRange } from "../util/range";
 
 /**
 此版本通过设置geoindex && seriesIndex: [1] 属性来实现geo和map共存，来达到hover散点和区域显示tooltip的效果
@@ -11,95 +13,95 @@ http://echarts.baidu.com/option.html#series-map.geoIndex
 并且加了pin气泡图标以示数值大小
 */
 
-const points = [{
-    value: [118.8062, 31.9208],
-    itemStyle: {
-        color: '#4ab2e5'
-    }
-}, {
-    value: [127.9688, 45.368],
-    itemStyle: {
-        color: '#4fb6d2'
-    }
-}, {
-    value: [110.3467, 41.4899],
-    itemStyle: {
-        color: '#52b9c7'
-    }
-}, {
-    value: [125.8154, 44.2584],
-    itemStyle: {
-        color: '#5abead'
-    }
-}, {
-    value: [116.4551, 40.2539],
-    itemStyle: {
-        color: '#f34e2b'
-    }
-}, {
-    value: [123.1238, 42.1216],
-    itemStyle: {
-        color: '#f56321'
-    }
-}, {
-    value: [114.4995, 38.1006],
-    itemStyle: {
-        color: '#f56f1c'
-    }
-}, {
-    value: [117.4219, 39.4189],
-    itemStyle: {
-        color: '#f58414'
-    }
-}, {
-    value: [112.3352, 37.9413],
-    itemStyle: {
-        color: '#f58f0e'
-    }
-}, {
-    value: [109.1162, 34.2004],
-    itemStyle: {
-        color: '#f5a305'
-    }
-}, {
-    value: [103.5901, 36.3043],
-    itemStyle: {
-        color: '#e7ab0b'
-    }
-}, {
-    value: [106.3586, 38.1775],
-    itemStyle: {
-        color: '#dfae10'
-    }
-}, {
-    value: [101.4038, 36.8207],
-    itemStyle: {
-        color: '#d5b314'
-    }
-}, {
-    value: [103.9526, 30.7617],
-    itemStyle: {
-        color: '#c1bb1f'
-    }
-}, {
-    value: [108.384366, 30.439702],
-    itemStyle: {
-        color: '#b9be23'
-    }
-}, {
-    value: [113.0823, 28.2568],
-    itemStyle: {
-        color: '#a6c62c'
-    }
-}, {
-    value: [102.9199, 25.46639],
-    itemStyle: {
-        color: '#96cc34'
-    }
-}, {
-    value: [119.4543, 25.9222]
-}];
+interface XGeoData {
+  name: string;
+  value: number;
+  coords: [number, number],
+}
 
+interface XGeoPointData {
+  name: string;
+  value: [number, number, number];
+  itemStyle: {
+    color: string;
+  };
+}
+
+interface XGeoLineData {
+  coords: [[number, number], [number, number]];
+  lineStyle: {
+    color: string;
+  }
+}
+
+type XGeoBarData = [number, string][];
+
+function formatToPointData(data: XGeoData[]): XGeoPointData[] {
+  return data.map((d: XGeoData, i: number) => ({
+    name: d.name,
+    value: [...d.coords, d.value],
+    itemStyle: {
+      color: pointColors[i % pointColors.length],
+    }
+  }));
+}
+
+function formatToLineData(data: XGeoData[], targetCoords: [number, number]): XGeoLineData[] {
+  return data.map((d: XGeoData, i: number) => ({
+    coords: [
+      d.coords,
+      targetCoords,
+    ],
+    lineStyle: {
+      color: pointColors[i % pointColors.length],
+    },
+  }));
+}
+
+function formatToBarData(data: XGeoData[]): XGeoBarData {
+  return data.map((d: XGeoData) => ([d.value, d.name]));
+}
+
+function formatToMapData(data: XGeoData[]) {
+  return data.map((d: XGeoData) => ({
+    name: d.name,
+    value: d.coords.concat(d.value),
+  }));
+}
+
+
+function getMinMax(data: XGeoData[]) {
+  let min = data[0].value, max = data[0].value;
+  for (const item of data) {
+    if (min > item.value) {
+      min = item.value;
+    }
+    if (max < item.value) {
+      max = item.value;
+    }
+  }
+
+  return [min, max];
+}
+
+const pointColors = [
+  '#4ab2e5',
+  '#4fb6d2',
+  '#52b9c7',
+  '#5abead',
+  '#f34e2b',
+  '#f56321',
+  '#f56f1c',
+  '#f58414',
+  '#f58f0e',
+  '#f5a305',
+  '#e7ab0b',
+  '#dfae10',
+  '#d5b314',
+  '#c1bb1f',
+  '#b9be23',
+  '#96cc34',
+];
 
 export class ChinaMap {
   public chart: ECharts;
@@ -112,322 +114,281 @@ export class ChinaMap {
   }
 
   private getBaseOptions() {
-    import('../localdb/china.json').then((data: { default: any }) => {
-      const geoJson = data.default;
-      this.chart.hideLoading();
-      echarts.registerMap('china', geoJson);
+    import("../localdb/china.json")
+      .then((data: { default: any }) => {
+        const geoJson = data.default;
+        this.chart.hideLoading();
+        echarts.registerMap("china", geoJson);
 
-      this.options = {
-        backgroundColor: '#F3F3F3',
-        geo: {
-            map: 'china',
+        const options: EChartOption = {
+          backgroundColor: "#F3F3F3",
+          tooltip: {
+            trigger: 'item',
+            formatter: (params: any) => {
+              const {name, seriesName, value, color } = params;
+    
+              return `
+                <div style="padding: 6px 12px;">
+                  <div style="width: 100%;text-align: left; margin-bottom: 6px; color: rgba(255,255,255,0.6)">${seriesName}</div>
+                  <div>
+                    <span style="display: inline-block;width:4px;height:8px;margin-right: 4px;background-color:${color}"></span>
+                    <span style="margin-right: 10px">${name}</span>
+                    <span style="margin-right: 10px;">${value}</span>
+                  </div>
+                </div>
+              `;
+            },
+            backgroundColor: optionColor.tooltipBackground,
+          },
+          grid: [{
+            right: '6%',
+            top: '15%',
+            bottom: '10%',
+            width: '20%'
+          }],
+          geo: {
+            show: false,
+            map: "china",
             aspectScale: 0.75, //长宽比
+            center: [113.83531246, 34.0267395887],
             zoom: 1.1,
             roam: false,
             itemStyle: {
-                normal: {
-                    areaColor: {
-                        type: 'radial',
-                        x: 0.5,
-                        y: 0.5,
-                        r: 0.8,
-                        colorStops: [{
-                            offset: 0,
-                            color: '#09132c' // 0% 处的颜色
-                        }, {
-                            offset: 1,
-                            color: '#274d68' // 100% 处的颜色
-                        }],
-                        globalCoord: true // 缺省为 false
+              normal: {
+                areaColor: {
+                  type: "radial",
+                  x: 0.5,
+                  y: 0.5,
+                  r: 0.8,
+                  colorStops: [
+                    {
+                      offset: 0,
+                      color: "#09132c", // 0% 处的颜色
                     },
-                    shadowColor: 'rgb(58,115,192)',
-                    shadowOffsetX: 10,
-                    shadowOffsetY: 11
+                    {
+                      offset: 1,
+                      color: "#274d68", // 100% 处的颜色
+                    },
+                  ],
+                  globalCoord: true, // 缺省为 false
+                },
+                shadowColor: "rgb(58,115,192)",
+                shadowOffsetX: 1,
+                shadowOffsetY: 1,
+              },
+              emphasis: {
+                areaColor: "#2AB8FF",
+                borderWidth: 0,
+                color: "green",
+                label: {
+                  show: false,
+                },
+              },
+            },
+            regions: [
+              {
+                name: "南海诸岛",
+                itemStyle: {
+                  areaColor: "rgba(0, 10, 52, 1)",
+
+                  borderColor: "rgba(0, 10, 52, 1)",
+                  normal: {
+                    opacity: 0,
+                    label: {
+                      show: false,
+                      color: "#009cc9",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          series: [
+            {
+              tooltip: {
+              },
+              type: "map",
+              center: [113.83531246, 34.0267395887],
+              label: {
+                normal: {
+                  show: true,
+                  textStyle: {
+                    color: "#8d93ab",
+                  },
                 },
                 emphasis: {
-                    areaColor: '#2AB8FF',
-                    borderWidth: 0,
-                    color: 'green',
-                    label: {
-                        show: false
-                    }
-                }
+                  textStyle: {
+                    color: "#393b44",
+                  },
+                },
+              },
+              itemStyle: {
+                normal: {
+                  borderColor: "#d6e0f0",
+                  borderWidth: 1,
+                  areaColor: {
+                    type: "radial",
+                    x: 0.5,
+                    y: 0.5,
+                    r: 0.8,
+                    colorStops: [
+                      {
+                        offset: 0,
+                        color: "#d6e0f0", // 0% 处的颜色
+                      },
+                      {
+                        offset: 1,
+                        color: "#f1f3f8", // 100% 处的颜色
+                      },
+                    ],
+                    globalCoord: true, // 缺省为 false
+                  },
+                },
+                emphasis: {
+                  areaColor: "#d6e0f0",
+                  borderWidth: 0.1,
+                },
+              },
+              zoom: 1.1,
+              roam: false,
+              map: "china",
+              data: []
             },
-            regions: [{
-                name: '南海诸岛',
-                itemStyle: {
-                    areaColor: 'rgba(0, 10, 52, 1)',
-  
-                    borderColor: 'rgba(0, 10, 52, 1)',
-                    normal: {
-                        opacity: 0,
-                        label: {
-                            show: false,
-                            color: "#009cc9",
-                        }
-                    }
+            {
+              tooltip: {
+                formatter: (params: any) => {
+                  const {name, seriesName, value, color } = params;
+        
+                  return `
+                    <div style="padding: 6px 12px;">
+                      <div style="width: 100%;text-align: left; margin-bottom: 6px; color: rgba(255,255,255,0.6)">${seriesName}</div>
+                      <div>
+                        <span style="display: inline-block;width:4px;height:8px;margin-right: 4px;background-color:${color}"></span>
+                        <span style="margin-right: 10px">${name}</span>
+                        <span style="margin-right: 10px;">${value[2]}</span>
+                      </div>
+                    </div>
+                  `;
                 },
-  
-  
-            }],
-        },
-        series: [{
-                type: 'map',
-                roam: false,
-                label: {
-                    normal: {
-                        show: true,
-                        textStyle: {
-                            color: '#1DE9B6'
-                        }
-                    },
-                    emphasis: {
-                        textStyle: {
-                            color: 'rgb(183,185,14)'
-                        }
-                    }
+              },
+              type: "effectScatter",
+              coordinateSystem: "geo",
+              showEffectOn: "render",
+              zlevel: 1,
+              rippleEffect: {
+                period: 15,
+                scale: 4,
+                brushType: "fill",
+              },
+              hoverAnimation: true,
+              label: {
+                normal: {
+                  formatter: "{b}",
+                  position: "right",
+                  offset: [15, 0],
+                  color: "#1DE9B6",
+                  show: false,
                 },
-  
-                itemStyle: {
-                    normal: {
-                        borderColor: 'rgb(147, 235, 248)',
-                        borderWidth: 1,
-                        areaColor: {
-                            type: 'radial',
-                            x: 0.5,
-                            y: 0.5,
-                            r: 0.8,
-                            colorStops: [{
-                                offset: 0,
-                                color: '#09132c' // 0% 处的颜色
-                            }, {
-                                offset: 1,
-                                color: '#274d68' // 100% 处的颜色
-                            }],
-                            globalCoord: true // 缺省为 false
-                        },
-                    },
-                    emphasis: {
-                        areaColor: 'rgb(46,229,206)',
-                        //    shadowColor: 'rgb(12,25,50)',
-                        borderWidth: 0.1
-                    }
+              },
+              itemStyle: {
+                normal: {
+                  color: "#1DE9B6",
+                  shadowBlur: 10,
+                  shadowColor: "#333",
                 },
-                zoom: 1.1,
-                //     roam: false,
-                map: 'china' //使用
-                // data: this.difficultData //热力图数据   不同区域 不同的底色
-            }, {
-                type: 'effectScatter',
-                coordinateSystem: 'geo',
-                showEffectOn: 'render',
-                zlevel: 1,
-                rippleEffect: {
-                    period: 15,
-                    scale: 4,
-                    brushType: 'fill'
-                },
-                hoverAnimation: true,
-                label: {
-                    normal: {
-                        formatter: '{b}',
-                        position: 'right',
-                        offset: [15, 0],
-                        color: '#1DE9B6',
-                        show: true
-                    },
-                },
-                itemStyle: {
-                    normal: {
-                        color: '#1DE9B6'
-                            /* function (value){ //随机颜色
-                             return "#"+("00000"+((Math.random()*16777215+0.5)>>0).toString(16)).slice(-6);
-                             }*/
-                            ,
-                        shadowBlur: 10,
-                        shadowColor: '#333'
-                    }
-                },
-                symbolSize: 12,
-                data: points
+              },
+              // symbolSize: 12,
+              data: [],
             }, //地图线的动画效果
             {
-                type: 'lines',
-                zlevel: 2,
-                effect: {
-                    show: true,
-                    period: 4, //箭头指向速度，值越小速度越快
-                    trailLength: 0.4, //特效尾迹长度[0,1]值越大，尾迹越长重
-                    symbol: 'arrow', //箭头图标
-                    symbolSize: 7, //图标大小
-                },
-                lineStyle: {
-                    // normal: {
-                        color: '#1DE9B6',
-                            /* function (value){ //随机颜色
-                        
-                        ['#f21347','#f3243e','#f33736','#f34131','#f34e2b',
-                        '#f56321','#f56f1c','#f58414','#f58f0e','#f5a305',
-                        '#e7ab0b','#dfae10','#d5b314','#c1bb1f','#b9be23',
-                        '#a6c62c','#96cc34','#89d23b','#7ed741','#77d64c',
-                        '#71d162','#6bcc75','#65c78b','#5fc2a0','#5abead',
-                        '#52b9c7','#4fb6d2','#4ab2e5']
-  return "#"+("00000"+((Math.random()*16777215+0.5)>>0).toString(16)).slice(-6);
-  }*/
-                        width: 1, //线条宽度
-                        opacity: 0.1, //尾迹线条透明度
-                        curveness: .3 //尾迹线条曲直度
-                    // },
-                },
-                data: [{
-                    coords: [
-                        [118.8062, 31.9208],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#4ab2e5'
-                    }
-                }, {
-                    coords: [
-                        [127.9688, 45.368],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#4fb6d2'
-                    }
-                }, {
-                    coords: [
-                        [110.3467, 41.4899],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#52b9c7'
-                    }
-                }, {
-                    coords: [
-                        [125.8154, 44.2584],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#5abead'
-                    }
-                }, {
-                    coords: [
-                        [116.4551, 40.2539],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#f34e2b'
-                    }
-                }, {
-                    coords: [
-                        [123.1238, 42.1216],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#f56321'
-                    }
-                }, {
-                    coords: [
-                        [114.4995, 38.1006],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#f56f1c'
-                    }
-                }, {
-                    coords: [
-                        [117.4219, 39.4189],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#f58414'
-                    }
-                }, {
-                    coords: [
-                        [112.3352, 37.9413],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#f58f0e'
-                    }
-                }, {
-                    coords: [
-                        [109.1162, 34.2004],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#f5a305'
-                    }
-                }, {
-                    coords: [
-                        [103.5901, 36.3043],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#e7ab0b'
-                    }
-                }, {
-                    coords: [
-                        [106.3586, 38.1775],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#dfae10'
-                    }
-                }, {
-                    coords: [
-                        [101.4038, 36.8207],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#d5b314'
-                    }
-                }, {
-                    coords: [
-                        [103.9526, 30.7617],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#c1bb1f'
-                    }
-                }, {
-                    coords: [
-                        [108.384366, 30.439702],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#b9be23'
-                    }
-                }, {
-                    coords: [
-                        [113.0823, 28.2568],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#a6c62c'
-                    }
-                }, {
-                    coords: [
-                        [102.9199, 25.46639],
-                        [119.4543, 25.9222]
-                    ],
-                    lineStyle: {
-                        color: '#96cc34'
-                    }
-                }]
-            }
-  
-        ]
-      };
-  
+              tooltip: {},
+              type: "lines",
+              zlevel: 2,
+              effect: {
+                show: true,
+                period: 4, //箭头指向速度，值越小速度越快
+                trailLength: 0.4, //特效尾迹长度[0,1]值越大，尾迹越长重
+                symbol: "arrow", //箭头图标
+                symbolSize: 7, //图标大小
+              },
+              lineStyle: {
+                color: "#1DE9B6",
+                width: 1, //线条宽度
+                opacity: 0.1, //尾迹线条透明度
+                curveness: 0.3, //尾迹线条曲直度
+              },
+              data: [],
+            },
+          ],
+        };
 
-    }).catch((e: Error) => {
-      console.log(e);
-    });
+        options.series?.push({
+          ...barSeries,
+          xAxisIndex: 0,
+          yAxisIndex: 0,
+          zlevel: 3,
+          tooltip: {
+            formatter: (params: any) => {
+              const {name, seriesName, value, color } = params;
+    
+              return `
+                <div style="padding: 6px 12px;">
+                  <div style="width: 100%;text-align: left; margin-bottom: 6px; color: rgba(255,255,255,0.6)">${seriesName}</div>
+                  <div>
+                    <span style="display: inline-block;width:4px;height:8px;margin-right: 4px;background-color:${color}"></span>
+                    <span style="margin-right: 10px">${name}</span>
+                    <span style="margin-right: 10px;">${value[0]}</span>
+                  </div>
+                </div>
+              `;
+            },
+          },
+          data: [],
+        });
+
+        options.series?.push({
+          label: {
+            show: false,
+          },
+          type: 'scatter',
+          coordinateSystem: 'geo',
+          data: [],
+        });
+
+
+        this.options = getBaseOption(options);
+        (this.options.xAxis as EChartOption.XAxis).type = 'value';
+        (this.options.yAxis as EChartOption.YAxis).type = 'category';
+        (this.options.yAxis as EChartOption.YAxis).axisLine!.show = true;
+      })
+      .catch((e: Error) => {
+        console.log(e);
+      });
   }
 
-  public render() {
+  public render(data: XGeoData[], targetCoords: [number, number]) {
+    const pointData = formatToPointData(data);
+    const lineData = formatToLineData(data, targetCoords);
+    const barData = formatToBarData(data);
+    const mapData = formatToMapData(data);
+    const [min, max] = getMinMax(data);
+
+    this.options.series![0].data = mapData;
+    this.options.series![1].data = pointData.slice(0, 9);
+    this.options.series![2].data = lineData.slice(0, 9);
+    this.options.series![3].data = barData.slice(0, 9);
+    this.options.series![4].data = mapData;
+
+    this.options.series![0].name = '区域数据';
+    this.options.series![1].name = 'TOP5';
+    this.options.series![3].name = 'TOP20';
+
+    (this.options.series![1] as EChartOption.SeriesTree).symbolSize = function (val: any) {
+      // min = 4, max = 20
+      return reflectRange(val[2], min, max, 4, 20);
+    },
+
+
     this.chart.setOption(this.options, true);
   }
 }
