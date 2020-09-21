@@ -15,9 +15,11 @@
     "strict": true,
     "target": "esnext",
     "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.json",
   ],
   "exclude": []
 }
