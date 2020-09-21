@@ -1,6 +1,6 @@
 {
   "name": "smart-chart",
-  "version": "2.0.0-alpha.2",
+  "version": "2.0.0-alpha.3",
   "description": "This chart library comprises other charts, like echarts, d3 etc",
   "main": "dist/index.js",
   "module": "dist/index.js",
