@@ -74,7 +74,6 @@ export class Map {
         },
         roam: true,
         itemStyle: {
-         
             normal: {
              //    设置地图的颜色
              //    areaColor: '#92FEFE',
@@ -194,7 +193,6 @@ export class Map {
       },
       series : [
           {
-              name: 'pm2.5',
               type: 'scatter',
               coordinateSystem: 'bmap',
               data: convertData(data),
@@ -219,7 +217,7 @@ export class Map {
               }
           },
           {
-              name: 'Top 5',
+              name: 'Top 6',
               type: 'effectScatter',
               coordinateSystem: 'bmap',
               data: convertData(data.sort(function (a, b) {

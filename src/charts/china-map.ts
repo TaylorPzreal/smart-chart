@@ -1,5 +1,6 @@
 import echarts, { ECharts, EChartOption } from "echarts";
 import { barSeries, getBaseOption, optionColor } from "../config/base-option";
+import { XGeoConfiguration, XGeoBarData, XGeoData, XGeoLineData, XGeoPointData } from '../type';
 import { reflectRange } from "../util/range";
 
 /**
@@ -12,29 +13,6 @@ http://echarts.baidu.com/option.html#series-map.geoIndex
 
 并且加了pin气泡图标以示数值大小
 */
-
-interface XGeoData {
-  name: string;
-  value: number;
-  coords: [number, number],
-}
-
-interface XGeoPointData {
-  name: string;
-  value: [number, number, number];
-  itemStyle: {
-    color: string;
-  };
-}
-
-interface XGeoLineData {
-  coords: [[number, number], [number, number]];
-  lineStyle: {
-    color: string;
-  }
-}
-
-type XGeoBarData = [number, string][];
 
 function formatToPointData(data: XGeoData[]): XGeoPointData[] {
   return data.map((d: XGeoData, i: number) => ({
@@ -366,7 +344,15 @@ export class ChinaMap {
       });
   }
 
-  public render(data: XGeoData[], targetCoords: [number, number]) {
+  public render(configuration: XGeoConfiguration) {
+    const {
+      data,
+      targetCoords,
+      mapName,
+      topName,
+      barName,
+    } = configuration;
+
     const pointData = formatToPointData(data);
     const lineData = formatToLineData(data, targetCoords);
     const barData = formatToBarData(data);
@@ -379,9 +365,9 @@ export class ChinaMap {
     this.options.series![3].data = barData.slice(0, 9);
     this.options.series![4].data = mapData;
 
-    this.options.series![0].name = '区域数据';
-    this.options.series![1].name = 'TOP5';
-    this.options.series![3].name = 'TOP20';
+    this.options.series![0].name = mapName;
+    this.options.series![1].name = topName;
+    this.options.series![3].name = barName;
 
     (this.options.series![1] as EChartOption.SeriesTree).symbolSize = function (val: any) {
       // min = 4, max = 20
