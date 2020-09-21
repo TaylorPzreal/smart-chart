@@ -13,6 +13,7 @@ Update records
 |---|---|---|
 |Line, Bar, Horizontal Bar, Pie, Download|2.0.0-alpha.1|2020/09/03|
 |DataZoom, Auto Resize|2.0.0-alpha.2|2020/09/08|
+|MapChart + BarChart|2.0.0-alpha.3|2020/09/21|
 
 ## Installition
 
@@ -74,10 +75,49 @@ chart.download('Saved file name').then((v: string) => {
 const chart = new SmartChart.Chart(document.getElementById('chart'));
 ```
 
+### MapChart
+
+```ts
+import { ChinaMap, XGeoConfiguration, XGeoData } from 'smart-chart';
+
+const chart = new ChinaMap(document.getElementById('chart') as HTMLDivElement);
+
+const mockData: XGeoConfiguration = {
+  data: [
+        {
+          name: 'A',
+          value: 10,
+          coords: [118.8062, 31.9208],
+        },
+        {
+          name: 'B',
+          value: 32,
+          coords: [127.9688, 45.368],
+        },
+        {
+          name: 'C',
+          value: 43,
+          coords: [110.3467, 41.4899],
+        },
+        {
+          name: 'D',
+          value: 54,
+          coords: [125.8154, 44.2584],
+        },
+  ],
+  targetCoords: [103.5901, 36.3043],
+  mapName: '区域数据',
+  topName: 'Top 6',
+  barName: 'Top 20',
+}
+
+chart.renderChart(mockData);
+```
+
 ## Examples
 
+![mapChart](./docs/mapchart.png)
 ![Line](./docs/line.png)
 ![Bar](./docs/bar.png)
 ![Horizontal Bar](./docs/horizontal-bar.png)
 ![Pie](./docs/pie.png)
-
